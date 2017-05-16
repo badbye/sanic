@@ -6,16 +6,20 @@ sanic==0.2.0
 """
 from sanic import Sanic
 from sanic import response
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
 app = Sanic('motor_mongodb')
+MotorClient = None
 
 
 def get_db():
-    from motor.motor_asyncio import AsyncIOMotorClient
-    mongo_uri = "mongodb://127.0.0.1:27017/test"
-    client = AsyncIOMotorClient(mongo_uri)
-    return client['test']
+    global MotorClient
+    if not MotorClient:
+        mongo_uri = "mongodb://127.0.0.1:27017/test"
+        client = AsyncIOMotorClient(mongo_uri)
+        MotorClient = client['test']
+    return MotorClient
 
 
 @app.route('/objects', methods=['GET'])
